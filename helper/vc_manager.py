@@ -1,20 +1,18 @@
-from userbot.helpers.utils import install_pip
-try:
-    from pytgcalls import PyTgCalls, StreamType
-except:
-    install_pip("py-tgcalls")
-    from pytgcalls import PyTgCalls, StreamType
-
-from pytgcalls.types import AudioPiped, AudioVideoPiped
-from pytgcalls.types.stream import StreamAudioEnded
-from telethon import functions, types
-from telethon.errors import ChatAdminRequiredError
-from pytgcalls.exceptions import NoActiveGroupCall, NodeJSNotInstalled, TooOldNodeJSVersion, AlreadyJoinedError, NotInGroupCallError
-from .stream_helper import Stream, yt_regex, check_url
-from youtube_dl import YoutubeDL
-import requests
 import asyncio
 from pathlib import Path
+
+import requests
+from pytgcalls import PyTgCalls, StreamType
+from pytgcalls.exceptions import (AlreadyJoinedError, NoActiveGroupCall,
+                                  NodeJSNotInstalled, NotInGroupCallError,
+                                  TooOldNodeJSVersion)
+from pytgcalls.types import AudioPiped, AudioVideoPiped
+from pytgcalls.types.stream import StreamAudioEnded
+from telethon import functions
+from telethon.errors import ChatAdminRequiredError
+from yt_dlp import YoutubeDL
+
+from .stream_helper import Stream, check_url, yt_regex
 
 
 class CatVC:
@@ -46,18 +44,18 @@ class CatVC:
         try:
             await self.app.join_group_call(
                 chat_id=chat.id,
-                stream=AudioPiped(
-                    'http://duramecho.com/Misc/SilentCd/Silence01s.mp3'
-                ),
+                stream=AudioPiped("http://duramecho.com/Misc/SilentCd/Silence01s.mp3"),
                 join_as=join_as_chat,
-                stream_type=StreamType().pulse_stream
+                stream_type=StreamType().pulse_stream,
             )
         except NoActiveGroupCall:
             try:
-                await self.client(functions.phone.CreateGroupCallRequest(
-                    peer=chat,
-                    title='Cat VC',
-                ))
+                await self.client(
+                    functions.phone.CreateGroupCallRequest(
+                        peer=chat,
+                        title="Cat VC",
+                    )
+                )
                 await self.join_vc(chat=chat, join_as=join_as)
             except ChatAdminRequiredError:
                 return "You need to become an admin to start VC, or ask one to start"
@@ -85,31 +83,30 @@ class CatVC:
         if yt_regex.match(input):
             with YoutubeDL({}) as ytdl:
                 ytdl_data = ytdl.extract_info(input, download=False)
-                title = ytdl_data.get('title', None)
+                title = ytdl_data.get("title", None)
             if title:
-                playable = ytdl_data['formats'][-1]['url']
+                playable = ytdl_data["formats"][-1]["url"]
             else:
                 return "Error Fetching URL"
         elif check_url(input):
             try:
                 res = requests.get(input, allow_redirects=True, stream=True)
-                ctype = res.headers.get('Content-Type')
-                if not 'video' in ctype or not 'audio' in ctype:
+                ctype = res.headers.get("Content-Type")
+                if "video" not in ctype or "audio" not in ctype:
                     return "INVALID URL"
-                name = res.headers.get('Content-Disposition', None)
+                name = res.headers.get("Content-Disposition", None)
                 if name:
-                    title = name.split('="')[0].split('"') or ''
+                    title = name.split('="')[0].split('"') or ""
                 else:
                     title = input
                 playable = input
             except Exception as e:
-                return "INVALID URL"
+                return f"**INVALID URL**\n\n{e}"
         else:
             path = Path(input)
             if path.exists():
                 if not path.name.endswith(
-                        (".mkv", ".mp4", ".webm", ".m4v",
-                         ".mp3", ".flac", ".wav", ".m4a")
+                    (".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a")
                 ):
                     return "`File is invalid for Streaming`"
                 playable = str(path.absolute())
@@ -117,17 +114,16 @@ class CatVC:
             else:
                 return "`File Path is invalid`"
         if self.PLAYING and not force:
-            self.PLAYLIST.append(
-                {'title': title, 'path': playable, 'stream': stream})
+            self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
             return f"Added to playlist.\n Position: {len(self.PLAYLIST)+1}"
         if not self.PLAYING:
-            self.PLAYLIST.append(
-                {'title': title, 'path': playable, 'stream': stream})
+            self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
             await self.skip()
             return f"Playing {title}"
         if force and self.PLAYING:
             self.PLAYLIST.insert(
-                0, {'title': title, 'path': playable, 'stream': stream})
+                0, {"title": title, "path": playable, "stream": stream}
+            )
             await self.skip()
             return f"Playing {title}"
 
@@ -143,24 +139,19 @@ class CatVC:
             if self.PLAYING:
                 await self.app.change_stream(
                     self.CHAT_ID,
-                    AudioPiped(
-                        'http://duramecho.com/Misc/SilentCd/Silence01s.mp3'
-                    )
+                    AudioPiped("http://duramecho.com/Misc/SilentCd/Silence01s.mp3"),
                 )
             self.PLAYING = False
             return "Skipped Stream\nEmpty Playlist"
 
         next = self.PLAYLIST.pop(0)
-        if next['stream'] == Stream.audio:
-            streamable = AudioPiped(next['path'])
+        if next["stream"] == Stream.audio:
+            streamable = AudioPiped(next["path"])
         else:
-            streamable = AudioVideoPiped(next['path'])
+            streamable = AudioVideoPiped(next["path"])
         try:
-            await self.app.change_stream(
-                self.CHAT_ID,
-                streamable
-            )
-        except:
+            await self.app.change_stream(self.CHAT_ID, streamable)
+        except Exception:
             await self.skip()
         self.PLAYING = next
         return f"Skipped Stream\nPlaying : `{next['title']}`"
