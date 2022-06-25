@@ -165,7 +165,7 @@ async def play_video(event):
     flag = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
     if input_str == "" and event.reply_to_msg_id:
-        input_str = tg_dl(event)
+        input_str = await tg_dl(event)
     if not input_str:
         return await edit_delete(
             event, "Please Provide a media file to stream on VC", time=20
@@ -209,7 +209,7 @@ async def play_audio(event):
     flag = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
     if input_str == "" and event.reply_to_msg_id:
-        input_str = tg_dl(event)
+        input_str = await tg_dl(event)
     if not input_str:
         return await edit_delete(
             event, "Please Provide a media file to stream on VC", time=20
