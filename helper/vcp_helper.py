@@ -3,9 +3,13 @@ from pathlib import Path
 
 import requests
 from pytgcalls import PyTgCalls, StreamType
-from pytgcalls.exceptions import (AlreadyJoinedError, NoActiveGroupCall,
-                                  NodeJSNotInstalled, NotInGroupCallError,
-                                  TooOldNodeJSVersion)
+from pytgcalls.exceptions import (
+    AlreadyJoinedError,
+    NoActiveGroupCall,
+    NodeJSNotInstalled,
+    NotInGroupCallError,
+    TooOldNodeJSVersion,
+)
 from pytgcalls.types import AudioPiped, AudioVideoPiped
 from pytgcalls.types.stream import StreamAudioEnded
 from telethon import functions
