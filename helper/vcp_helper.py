@@ -33,6 +33,14 @@ class CatVC:
     async def start(self):
         await self.app.start()
 
+    def clear_vars(self):
+        self.CHAT_ID = None
+        self.CHAT_NAME = None
+        self.PLAYING = False
+        self.PAUSED = False
+        self.MUTED = False
+        self.PLAYLIST = []
+
     async def join_vc(self, chat, join_as=None):
         if self.CHAT_ID:
             return f"Already in a group call on {self.CHAT_NAME}"
@@ -110,7 +118,8 @@ class CatVC:
             path = Path(input)
             if path.exists():
                 if not path.name.endswith(
-                    (".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a")
+                    (".mkv", ".mp4", ".webm", ".m4v",
+                     ".mp3", ".flac", ".wav", ".m4a")
                 ):
                     return "`File is invalid for Streaming`"
                 playable = str(path.absolute())
@@ -118,10 +127,12 @@ class CatVC:
             else:
                 return "`File Path is invalid`"
         if self.PLAYING and not force:
-            self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
+            self.PLAYLIST.append(
+                {"title": title, "path": playable, "stream": stream})
             return f"Added to playlist.\n Position: {len(self.PLAYLIST)+1}"
         if not self.PLAYING:
-            self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
+            self.PLAYLIST.append(
+                {"title": title, "path": playable, "stream": stream})
             await self.skip()
             return f"Playing {title}"
         if force and self.PLAYING:

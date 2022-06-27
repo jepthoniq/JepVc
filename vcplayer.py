@@ -22,6 +22,18 @@ async def handler(_, update):
     await vc_player.handle_next(update)
 
 
+@vc_player.app.on_kicked()
+@vc_player.app.on_left()
+async def left(bot, chat_id):
+    vc_player.clear_vars()
+
+
+@vc_player.app.on_closed_voice_chat()
+async def left(bot, chat_id):
+    if vc_player.CHAT_ID == chat_id:
+        vc_player.clear_vars()
+
+
 @catub.cat_cmd(
     pattern="joinvc ?(\S+)? ?(?:-as)? ?(\S+)?",
     command=("joinvc", plugin_category),
