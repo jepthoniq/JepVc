@@ -22,7 +22,6 @@ async def handler(_, update):
     await vc_player.handle_next(update)
 
 
-@vc_player.app.on_kicked()
 @vc_player.app.on_left()
 async def left(bot, chat_id):
     vc_player.clear_vars()
