@@ -1,16 +1,16 @@
-from pytgcalls.binding import time
+import asyncio
+
 from telethon.tl.types import User
 from userbot import catub
-import asyncio
 from userbot.core.managers import edit_delete, edit_or_reply
-from .helper.vc_manager import CatVC
+
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
-
+from .helper.vcp_helper import CatVC
 
 plugin_category = "extra"
 
-catub.__class__.__module__ = 'telethon.client.telegramclient'
+catub.__class__.__module__ = "telethon.client.telegramclient"
 
 vc_player = CatVC(catub)
 
@@ -51,16 +51,18 @@ async def joinVoicechat(event):
     chat = event.pattern_match.group(1)
     joinas = event.pattern_match.group(2)
 
-    await edit_or_reply(event, 'Joining VC ......')
+    await edit_or_reply(event, "Joining VC ......")
 
-    if chat and chat != '-as':
-        if chat.strip('-').isnumeric():
+    if chat and chat != "-as":
+        if chat.strip("-").isnumeric():
             chat = int(chat)
     else:
         chat = event.chat_id
 
     if vc_player.CHAT_NAME:
-        return await edit_delete(event, f'You have already Joined in {vc_player.CHAT_NAME}')
+        return await edit_delete(
+            event, f"You have already Joined in {vc_player.CHAT_NAME}"
+        )
 
     try:
         vc_chat = await catub.get_entity(chat)
@@ -68,10 +70,14 @@ async def joinVoicechat(event):
         return await edit_delete(event, f'ERROR : \n{e or "UNKNOWN CHAT"}')
 
     if isinstance(vc_chat, User):
-        return await edit_delete(event, 'Voice Chats are not available in Private Chats')
+        return await edit_delete(
+            event, "Voice Chats are not available in Private Chats"
+        )
 
     if joinas and not vc_chat.username:
-        await edit_or_reply(event, 'Unable to use Join as in Private Chat. Joining as Yourself...')
+        await edit_or_reply(
+            event, "Unable to use Join as in Private Chat. Joining as Yourself..."
+        )
         joinas = False
 
     out = await vc_player.join_vc(vc_chat, joinas)
@@ -95,10 +101,10 @@ async def joinVoicechat(event):
 async def leaveVoicechat(event):
     "To leave a Voice Chat."
     if vc_player.CHAT_ID:
-        await edit_or_reply(event, 'Leaving VC ......')
+        await edit_or_reply(event, "Leaving VC ......")
         chat_name = vc_player.CHAT_NAME
         await vc_player.leave_vc()
-        await edit_delete(event, f'Left VC of {chat_name}')
+        await edit_delete(event, f"Left VC of {chat_name}")
     else:
         await edit_delete(event, "Not yet joined any VC")
 
@@ -119,14 +125,14 @@ async def leaveVoicechat(event):
 )
 async def get_playlist(event):
     "To Get all playlist for Voice Chat."
-    await edit_or_reply(event, 'Fetching Playlist ......')
+    await edit_or_reply(event, "Fetching Playlist ......")
     playl = vc_player.PLAYLIST
     if not playl:
         await edit_delete(event, "Playlist empty", time=10)
     else:
         cat = ""
         for num, item in enumerate(playl, 1):
-            if item['stream'] == Stream.audio:
+            if item["stream"] == Stream.audio:
                 cat += f"{num}. 🔉  `{item['title']}`\n"
             else:
                 cat += f"{num}. 📺  `{item['title']}`\n"
@@ -158,15 +164,17 @@ async def play_video(event):
     "To Play a media as video on VC."
     flag = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
-    if input_str == '' and event.reply_to_msg_id:
-        input_str = tg_dl(event)
+    if input_str == "" and event.reply_to_msg_id:
+        input_str = await tg_dl(event)
     if not input_str:
-        return await edit_delete(event, "Please Provide a media file to stream on VC", time=20)
+        return await edit_delete(
+            event, "Please Provide a media file to stream on VC", time=20
+        )
     if not vc_player.CHAT_ID:
-        return await edit_or_reply(event, 'Join a VC and use play command')
+        return await edit_or_reply(event, "Join a VC and use play command")
     if not input_str:
-        return await edit_or_reply(event, 'No Input to play in vc')
-    await edit_or_reply(event, 'Playing in VC ......')
+        return await edit_or_reply(event, "No Input to play in vc")
+    await edit_or_reply(event, "Playing in VC ......")
     if flag:
         resp = await vc_player.play_song(input_str, Stream.video, force=True)
     else:
@@ -200,15 +208,17 @@ async def play_audio(event):
     "To Play a media as audio on VC."
     flag = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
-    if input_str == '' and event.reply_to_msg_id:
-        input_str = tg_dl(event)
+    if input_str == "" and event.reply_to_msg_id:
+        input_str = await tg_dl(event)
     if not input_str:
-        return await edit_delete(event, "Please Provide a media file to stream on VC", time=20)
+        return await edit_delete(
+            event, "Please Provide a media file to stream on VC", time=20
+        )
     if not vc_player.CHAT_ID:
-        return await edit_or_reply(event, 'Join a VC and use play command')
+        return await edit_or_reply(event, "Join a VC and use play command")
     if not input_str:
-        return await edit_or_reply(event, 'No Input to play in vc')
-    await edit_or_reply(event, 'Playing in VC ......')
+        return await edit_or_reply(event, "No Input to play in vc")
+    await edit_or_reply(event, "Playing in VC ......")
     if flag:
         resp = await vc_player.play_song(input_str, Stream.audio, force=True)
     else:
@@ -233,7 +243,7 @@ async def play_audio(event):
 )
 async def pause_stream(event):
     "To Pause a stream on Voice Chat."
-    await edit_or_reply(event, 'Pausing VC ......')
+    await edit_or_reply(event, "Pausing VC ......")
     res = await vc_player.pause()
     await edit_delete(event, res, time=30)
 
@@ -254,7 +264,7 @@ async def pause_stream(event):
 )
 async def resume_stream(event):
     "To Resume a stream on Voice Chat."
-    await edit_or_reply(event, 'Resuming VC ......')
+    await edit_or_reply(event, "Resuming VC ......")
     res = await vc_player.resume()
     await edit_delete(event, res, time=30)
 
@@ -317,6 +327,6 @@ async def resume_stream(event):
 )
 async def skip_stream(event):
     "To Skip currently playing stream on Voice Chat."
-    await edit_or_reply(event, 'Skiping Stream ......')
+    await edit_or_reply(event, "Skiping Stream ......")
     res = await vc_player.skip()
     await edit_delete(event, res, time=30)

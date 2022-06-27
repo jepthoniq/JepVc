@@ -5,22 +5,15 @@ import pathlib
 import time
 from datetime import datetime
 
-from pySmartDL import SmartDL
 from telethon.tl import types
 from telethon.utils import get_extension
-
-from userbot import catub
-
 from userbot.Config import Config
-from userbot.core.managers import edit_delete, edit_or_reply
-from userbot.helpers import humanbytes, progress
-from userbot.helpers.utils import _format
-
+from userbot.core.managers import edit_or_reply
+from userbot.helpers import progress
 
 NAME = "untitled"
 
-downloads = pathlib.Path(os.path.join(
-    os.getcwd(), Config.TMP_DOWNLOAD_DIRECTORY))
+downloads = pathlib.Path(os.path.join(os.getcwd(), Config.TMP_DOWNLOAD_DIRECTORY))
 
 
 async def _get_file_name(path: pathlib.Path, full: bool = True) -> str:
