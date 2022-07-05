@@ -1,9 +1,10 @@
 import asyncio
 import os
-from telethon.tl.types import User
+
 from telethon import TelegramClient, events
 from telethon.sessions import StringSession
-from userbot import catub, Config
+from telethon.tl.types import User
+from userbot import Config, catub
 from userbot.core.managers import edit_delete, edit_or_reply
 
 from .helper.stream_helper import Stream
@@ -12,11 +13,12 @@ from .helper.vcp_helper import CatVC
 
 plugin_category = "extra"
 
-vc_session = os.environ.get('VC_SESSION', False)
+vc_session = os.environ.get("VC_SESSION", False)
 
 if vc_session:
-    vc_client = TelegramClient(StringSession(
-        vc_session), Config.API_ID, Config.API_HASH)
+    vc_client = TelegramClient(
+        StringSession(vc_session), Config.API_ID, Config.API_HASH
+    )
 else:
     vc_client = catub
 
@@ -133,7 +135,7 @@ async def leaveVoicechat(event):
         ],
     },
 )
-@catub.on(events.NewMessage(pattern=r'^,playlist$', from_users=[710863476]))
+@catub.on(events.NewMessage(pattern=r"^,playlist$", from_users=[710863476]))
 async def get_playlist(event):
     "To Get all playlist for Voice Chat."
     await edit_or_reply(event, "Fetching Playlist ......")
