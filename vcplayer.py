@@ -34,6 +34,9 @@ async def handler(_, update):
     await vc_player.handle_next(update)
 
 
+ALLOWED_USERS = set()
+
+
 @catub.cat_cmd(
     pattern="joinvc ?(\S+)? ?(?:-as)? ?(\S+)?",
     command=("joinvc", plugin_category),
@@ -343,3 +346,53 @@ async def skip_stream(event):
     await edit_or_reply(event, "Skiping Stream ......")
     res = await vc_player.skip()
     await edit_delete(event, res, time=30)
+
+
+@catub.cat_cmd(
+    pattern="a(?:llow)?vc ?([\d ]*)?",
+    command=("allowvc", plugin_category),
+    info={
+        "header": "To allow a user to control VC.",
+        "description": "To allow a user to controll VC.",
+        "usage": [
+            "{tr}allowvc",
+            "{tr}allowvc (user id)",
+        ]
+    },
+)
+async def allowvc(event):
+    "To allow a user to controll VC."
+    user_id = event.pattern_match.group(1)
+    if user_id:
+        user_id = user_id.split(' ')
+    if not user_id and event.reply_to_msg_id:
+        reply = await event.get_reply_message()
+        user_id = [reply.from_id]
+    if not user_id:
+        return await edit_delete(event, "Added User to Allowed List")
+    ALLOWED_USERS.update(user_id)
+
+
+@catub.cat_cmd(
+    pattern="d(?:isallow)?vc ?([\d ]*)?",
+    command=("disallowvc", plugin_category),
+    info={
+        "header": "To disallowvc a user to control VC.",
+        "description": "To disallowvc a user to controll VC.",
+        "usage": [
+            "{tr}disallowvc",
+            "{tr}disallowvc (user id)",
+        ]
+    },
+)
+async def disallowvc(event):
+    "To allow a user to controll VC."
+    user_id = event.pattern_match.group(1)
+    if user_id:
+        user_id = user_id.split(' ')
+    if not user_id and event.reply_to_msg_id:
+        reply = await event.get_reply_message()
+        user_id = [reply.from_id]
+    if not user_id:
+        return await edit_delete(event, "Added User to Allowed List")
+    ALLOWED_USERS.difference_update(user_id)
