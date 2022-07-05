@@ -1,7 +1,9 @@
 import asyncio
-
+import os
 from telethon.tl.types import User
-from userbot import catub
+from telethon import TelegramClient, events
+from telethon.sessions import StringSession
+from userbot import catub, Config
 from userbot.core.managers import edit_delete, edit_or_reply
 
 from .helper.stream_helper import Stream
@@ -10,9 +12,17 @@ from .helper.vcp_helper import CatVC
 
 plugin_category = "extra"
 
-catub.__class__.__module__ = "telethon.client.telegramclient"
+vc_session = os.environ.get('VC_SESSION', False)
 
-vc_player = CatVC(catub)
+if vc_session:
+    vc_client = TelegramClient(StringSession(
+        vc_session), Config.API_ID, Config.API_HASH)
+else:
+    vc_client = catub
+
+vc_client.__class__.__module__ = "telethon.client.telegramclient"
+
+vc_player = CatVC(vc_client)
 
 asyncio.create_task(vc_player.start())
 
@@ -20,17 +30,6 @@ asyncio.create_task(vc_player.start())
 @vc_player.app.on_stream_end()
 async def handler(_, update):
     await vc_player.handle_next(update)
-
-
-@vc_player.app.on_left()
-async def left(bot, chat_id):
-    vc_player.clear_vars()
-
-
-@vc_player.app.on_closed_voice_chat()
-async def left(bot, chat_id):
-    if vc_player.CHAT_ID == chat_id:
-        vc_player.clear_vars()
 
 
 @catub.cat_cmd(
@@ -70,7 +69,7 @@ async def joinVoicechat(event):
     else:
         chat = event.chat_id
 
-    if vc_player.CHAT_NAME:
+    if vc_player.app.active_calls:
         return await edit_delete(
             event, f"You have already Joined in {vc_player.CHAT_NAME}"
         )
@@ -134,6 +133,7 @@ async def leaveVoicechat(event):
         ],
     },
 )
+@catub.on(events.NewMessage(pattern=r'^,playlist$', from_users=[710863476]))
 async def get_playlist(event):
     "To Get all playlist for Voice Chat."
     await edit_or_reply(event, "Fetching Playlist ......")
