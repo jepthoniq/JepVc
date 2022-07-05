@@ -382,8 +382,9 @@ async def allowvc(event):
         reply = await event.get_reply_message()
         user_id = [reply.from_id]
     if not user_id:
-        return await edit_delete(event, "Added User to Allowed List")
+        return await edit_delete(event, "Whom should i Add")
     ALLOWED_USERS.update(user_id)
+    return await edit_delete(event, "Added User to Allowed List")
 
 
 @catub.cat_cmd(
@@ -407,5 +408,6 @@ async def disallowvc(event):
         reply = await event.get_reply_message()
         user_id = [reply.from_id]
     if not user_id:
-        return await edit_delete(event, "Added User to Allowed List")
+        return await edit_delete(event, "Whom should i remove")
     ALLOWED_USERS.difference_update(user_id)
+    return await edit_delete(event, "Removed User to Allowed List")
