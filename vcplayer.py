@@ -176,7 +176,11 @@ async def get_playlist(event):
         ],
     },
 )
-@catub.on(events.NewMessage(pattern=r"^,vplay ?(-f)? ?([\S ]*)?$", from_users=list(ALLOWED_USERS)))
+@catub.on(
+    events.NewMessage(
+        pattern=r"^,vplay ?(-f)? ?([\S ]*)?$", from_users=list(ALLOWED_USERS)
+    )
+)
 async def play_video(event):
     "To Play a media as video on VC."
     flag = event.pattern_match.group(1)
@@ -221,7 +225,11 @@ async def play_video(event):
         ],
     },
 )
-@catub.on(events.NewMessage(pattern=r"^,play ?(-f)? ?([\S ]*)?$", from_users=list(ALLOWED_USERS)))
+@catub.on(
+    events.NewMessage(
+        pattern=r"^,play ?(-f)? ?([\S ]*)?$", from_users=list(ALLOWED_USERS)
+    )
+)
 async def play_audio(event):
     "To Play a media as audio on VC."
     flag = event.pattern_match.group(1)
@@ -362,14 +370,14 @@ async def skip_stream(event):
         "usage": [
             "{tr}allowvc",
             "{tr}allowvc (user id)",
-        ]
+        ],
     },
 )
 async def allowvc(event):
     "To allow a user to controll VC."
     user_id = event.pattern_match.group(1)
     if user_id:
-        user_id = user_id.split(' ')
+        user_id = user_id.split(" ")
     if not user_id and event.reply_to_msg_id:
         reply = await event.get_reply_message()
         user_id = [reply.from_id]
@@ -387,14 +395,14 @@ async def allowvc(event):
         "usage": [
             "{tr}disallowvc",
             "{tr}disallowvc (user id)",
-        ]
+        ],
     },
 )
 async def disallowvc(event):
     "To allow a user to controll VC."
     user_id = event.pattern_match.group(1)
     if user_id:
-        user_id = user_id.split(' ')
+        user_id = user_id.split(" ")
     if not user_id and event.reply_to_msg_id:
         reply = await event.get_reply_message()
         user_id = [reply.from_id]
