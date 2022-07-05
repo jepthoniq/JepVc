@@ -138,7 +138,7 @@ async def leaveVoicechat(event):
         ],
     },
 )
-@catub.on(events.NewMessage(pattern=r"^,playlist$", from_users=[710863476]))
+@catub.on(events.NewMessage(pattern=r"^,playlist$", from_users=list(ALLOWED_USERS)))
 async def get_playlist(event):
     "To Get all playlist for Voice Chat."
     await edit_or_reply(event, "Fetching Playlist ......")
@@ -176,6 +176,7 @@ async def get_playlist(event):
         ],
     },
 )
+@catub.on(events.NewMessage(pattern=r"^,vplay ?(-f)? ?([\S ]*)?$", from_users=list(ALLOWED_USERS)))
 async def play_video(event):
     "To Play a media as video on VC."
     flag = event.pattern_match.group(1)
@@ -220,6 +221,7 @@ async def play_video(event):
         ],
     },
 )
+@catub.on(events.NewMessage(pattern=r"^,play ?(-f)? ?([\S ]*)?$", from_users=list(ALLOWED_USERS)))
 async def play_audio(event):
     "To Play a media as audio on VC."
     flag = event.pattern_match.group(1)
@@ -257,6 +259,7 @@ async def play_audio(event):
         ],
     },
 )
+@catub.on(events.NewMessage(pattern=r"^,pause$", from_users=list(ALLOWED_USERS)))
 async def pause_stream(event):
     "To Pause a stream on Voice Chat."
     await edit_or_reply(event, "Pausing VC ......")
@@ -278,6 +281,7 @@ async def pause_stream(event):
         ],
     },
 )
+@catub.on(events.NewMessage(pattern=r"^,resume$", from_users=list(ALLOWED_USERS)))
 async def resume_stream(event):
     "To Resume a stream on Voice Chat."
     await edit_or_reply(event, "Resuming VC ......")
@@ -341,6 +345,7 @@ async def resume_stream(event):
         ],
     },
 )
+@catub.on(events.NewMessage(pattern=r"^,skip$", from_users=list(ALLOWED_USERS)))
 async def skip_stream(event):
     "To Skip currently playing stream on Voice Chat."
     await edit_or_reply(event, "Skiping Stream ......")
