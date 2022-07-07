@@ -13,6 +13,9 @@ from .helper.vcp_helper import CatVC
 
 plugin_category = "extra"
 
+OWNER_ID = catub.uid
+SUDO_IDS = os.environ.get("VC_SUDO",) or 1111111 #or list from database
+tr = os.environ.get("COMMAND_HAND_LER")
 vc_session = os.environ.get("VC_SESSION", False)
 
 if vc_session:
@@ -27,6 +30,22 @@ vc_client.__class__.__module__ = "telethon.client.telegramclient"
 vc_player = CatVC(vc_client)
 
 asyncio.create_task(vc_player.start())
+
+def auth_():
+    authorized = []
+    authorized.append(int(OWNER_ID))
+    ids = SUDO_IDS.split(' ')
+    for id in ids:
+        authorized.append(int(id))
+    return authorized
+
+def check_auth(func):
+    async def wrapper(event: events):
+        user = event.sender.id
+        auth = auth_()
+        if user not in auth: return
+        else: await func(event)
+    return wrapper
 
 
 @vc_player.app.on_stream_end()
@@ -139,6 +158,7 @@ async def leaveVoicechat(event):
     },
 )
 @catub.on(events.NewMessage(pattern=r"^,playlist$", from_users=list(ALLOWED_USERS)))
+@check_auth
 async def get_playlist(event):
     "To Get all playlist for Voice Chat."
     await edit_or_reply(event, "Fetching Playlist ......")
@@ -181,6 +201,7 @@ async def get_playlist(event):
         pattern=r"^,vplay ?(-f)? ?([\S ]*)?$", from_users=list(ALLOWED_USERS)
     )
 )
+@check_auth
 async def play_video(event):
     "To Play a media as video on VC."
     flag = event.pattern_match.group(1)
@@ -230,6 +251,7 @@ async def play_video(event):
         pattern=r"^,play ?(-f)? ?([\S ]*)?$", from_users=list(ALLOWED_USERS)
     )
 )
+@check_auth
 async def play_audio(event):
     "To Play a media as audio on VC."
     flag = event.pattern_match.group(1)
@@ -268,6 +290,7 @@ async def play_audio(event):
     },
 )
 @catub.on(events.NewMessage(pattern=r"^,pause$", from_users=list(ALLOWED_USERS)))
+@check_auth
 async def pause_stream(event):
     "To Pause a stream on Voice Chat."
     await edit_or_reply(event, "Pausing VC ......")
@@ -290,6 +313,7 @@ async def pause_stream(event):
     },
 )
 @catub.on(events.NewMessage(pattern=r"^,resume$", from_users=list(ALLOWED_USERS)))
+@check_auth
 async def resume_stream(event):
     "To Resume a stream on Voice Chat."
     await edit_or_reply(event, "Resuming VC ......")
@@ -354,6 +378,7 @@ async def resume_stream(event):
     },
 )
 @catub.on(events.NewMessage(pattern=r"^,skip$", from_users=list(ALLOWED_USERS)))
+@check_auth
 async def skip_stream(event):
     "To Skip currently playing stream on Voice Chat."
     await edit_or_reply(event, "Skiping Stream ......")
@@ -411,3 +436,48 @@ async def disallowvc(event):
         return await edit_delete(event, "Whom should i remove")
     ALLOWED_USERS.difference_update(user_id)
     return await edit_delete(event, "Removed User to Allowed List")
+
+@catub.on(events.NewMessage(outgoing=True, pattern=f"{tr}(speak|sp)(h|j)?(?:\s|$)([\s\S]*)")) #only for catub client
+async def speak(event):
+    "Speak in vc"
+    r = event.pattern_match.group(2)
+    input_str = event.pattern_match.group(3)
+    re = await event.get_reply_message()
+    if ";" in input_str:
+        lan, text = input_str.split(";")
+    else:
+        if input_str:
+            text = input_str
+        elif re and re.text and not input_str:
+            text = re.message
+        else:
+            return await event.delete()
+        if r == "h":
+            lan = "hi"
+        elif r == "j":
+            lan = "ja"
+        else:
+            lan = "en"
+    text = deEmojify(text.strip())
+    lan = lan.strip()
+    if not os.path.isdir("./temp/"):
+        os.makedirs("./temp/")
+    file = "./temp/" + "voice.ogg"
+    try:
+        tts = gTTS(text, lang=lan)
+        tts.save(file)
+        cmd = ["ffmpeg", "-i", file, "-map", "0:a", "-codec:a", "libopus", "-b:a", "100k", "-vbr", "on", file + ".opus",]
+        try:
+            t_response = subprocess.check_output(
+                cmd, stderr=subprocess.STDOUT
+            )
+        except (subprocess.CalledProcessError, NameError, FileNotFoundError) as exc:
+            await edit_or_reply(event, str(exc))
+        else:
+            os.remove(file)
+            file = file + ".opus"
+        await vc_player.play_song(file, Stream.audio, force=False)
+        await event.delete()
+        os.remove(file)
+    except Exception as e:
+        await edit_or_reply(event, f"**Error:**\n`{e}`")
