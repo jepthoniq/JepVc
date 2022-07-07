@@ -1,13 +1,13 @@
 import asyncio
 import os
-from gtts import gTTS
 
+from gtts import gTTS
 from telethon import TelegramClient, events
 from telethon.sessions import StringSession
 from telethon.tl.types import User
 from userbot import Config, catub
-from userbot.plugins import deEmojify
 from userbot.core.managers import edit_delete, edit_or_reply
+from userbot.plugins import deEmojify
 
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
@@ -16,7 +16,12 @@ from .helper.vcp_helper import CatVC
 plugin_category = "extra"
 
 OWNER_ID = catub.uid
-SUDO_IDS = os.environ.get("VC_SUDO",) or 1111111 #or list from database
+SUDO_IDS = (
+    os.environ.get(
+        "VC_SUDO",
+    )
+    or 1111111
+)  # or list from database
 tr = os.environ.get("COMMAND_HAND_LER")
 vc_session = os.environ.get("VC_SESSION", False)
 
@@ -33,20 +38,25 @@ vc_player = CatVC(vc_client)
 
 asyncio.create_task(vc_player.start())
 
+
 def auth_():
     authorized = []
     authorized.append(int(OWNER_ID))
-    ids = SUDO_IDS.split(' ')
+    ids = SUDO_IDS.split(" ")
     for id in ids:
         authorized.append(int(id))
     return authorized
+
 
 def check_auth(func):
     async def wrapper(event: events):
         user = event.sender.id
         auth = auth_()
-        if user not in auth: return
-        else: await func(event)
+        if user not in auth:
+            return
+        else:
+            await func(event)
+
     return wrapper
 
 
@@ -439,7 +449,10 @@ async def disallowvc(event):
     ALLOWED_USERS.difference_update(user_id)
     return await edit_delete(event, "Removed User to Allowed List")
 
-@catub.on(events.NewMessage(outgoing=True, pattern=f"{tr}(speak|sp)(h|j)?(?:\s|$)([\s\S]*)")) #only for catub client
+
+@catub.on(
+    events.NewMessage(outgoing=True, pattern=f"{tr}(speak|sp)(h|j)?(?:\s|$)([\s\S]*)")
+)  # only for catub client
 async def speak(event):
     "Speak in vc"
     r = event.pattern_match.group(2)
@@ -468,11 +481,22 @@ async def speak(event):
     try:
         tts = gTTS(text, lang=lan)
         tts.save(file)
-        cmd = ["ffmpeg", "-i", file, "-map", "0:a", "-codec:a", "libopus", "-b:a", "100k", "-vbr", "on", file + ".opus",]
+        cmd = [
+            "ffmpeg",
+            "-i",
+            file,
+            "-map",
+            "0:a",
+            "-codec:a",
+            "libopus",
+            "-b:a",
+            "100k",
+            "-vbr",
+            "on",
+            file + ".opus",
+        ]
         try:
-            t_response = subprocess.check_output(
-                cmd, stderr=subprocess.STDOUT
-            )
+            t_response = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except (subprocess.CalledProcessError, NameError, FileNotFoundError) as exc:
             await edit_or_reply(event, str(exc))
         else:
