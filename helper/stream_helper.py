@@ -29,4 +29,4 @@ def check_url(url):
 async def get_yt_stream_link(url, audio_only=False):
     if audio_only:
         return (await runcmd(f"yt-dlp --no-warnings -f bestaudio -g {url}"))[0]
-    (await runcmd(f"yt-dlp --no-warnings -f best -g {url}"))[0]
+    return (await runcmd(f"yt-dlp --no-warnings -f best -g {url}"))[0]
