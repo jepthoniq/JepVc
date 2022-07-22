@@ -1,5 +1,6 @@
 import asyncio
 import os
+import logging
 
 from gtts import gTTS
 from telethon import TelegramClient, events
@@ -14,6 +15,8 @@ from .helper.tg_downloader import tg_dl
 from .helper.vcp_helper import CatVC
 
 plugin_category = "extra"
+
+logging.getLogger("pytgcalls").setLevel(logging.ERROR)
 
 OWNER_ID = catub.uid
 SUDO_IDS = (
@@ -451,7 +454,8 @@ async def disallowvc(event):
 
 
 @catub.on(
-    events.NewMessage(outgoing=True, pattern=f"{tr}(speak|sp)(h|j)?(?:\s|$)([\s\S]*)")
+    events.NewMessage(
+        outgoing=True, pattern=f"{tr}(speak|sp)(h|j)?(?:\s|$)([\s\S]*)")
 )  # only for catub client
 async def speak(event):
     "Speak in vc"
