@@ -1,6 +1,6 @@
 import asyncio
-import os
 import logging
+import os
 
 from gtts import gTTS
 from telethon import TelegramClient, events
@@ -454,8 +454,7 @@ async def disallowvc(event):
 
 
 @catub.on(
-    events.NewMessage(
-        outgoing=True, pattern=f"{tr}(speak|sp)(h|j)?(?:\s|$)([\s\S]*)")
+    events.NewMessage(outgoing=True, pattern=f"{tr}(speak|sp)(h|j)?(?:\s|$)([\s\S]*)")
 )  # only for catub client
 async def speak(event):
     "Speak in vc"
