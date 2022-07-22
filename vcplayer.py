@@ -2,13 +2,11 @@ import asyncio
 import logging
 import os
 
-from gtts import gTTS
-from telethon import TelegramClient, events
+from telethon import TelegramClient
 from telethon.sessions import StringSession
 from telethon.tl.types import User
 from userbot import Config, catub
 from userbot.core.managers import edit_delete, edit_or_reply
-from userbot.plugins import deEmojify
 
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
