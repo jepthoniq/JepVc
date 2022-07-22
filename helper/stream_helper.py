@@ -4,6 +4,8 @@ from enum import Enum
 from requests.exceptions import MissingSchema
 from requests.models import PreparedRequest
 
+from userbot.utils import runcmd
+
 
 class Stream(Enum):
     audio = 1
@@ -22,3 +24,9 @@ def check_url(url):
         return prepared_request.url
     except MissingSchema:
         return False
+
+
+async def get_yt_stream_link(url, audio_only=False):
+    if audio_only:
+        return (await runcmd(f"yt-dlp --no-warnings -f bestaudio -g {url}"))[0]
+    (await runcmd(f"yt-dlp --no-warnings -f best -g {url}"))[0]
