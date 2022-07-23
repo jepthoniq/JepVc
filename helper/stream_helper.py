@@ -1,10 +1,10 @@
 import re
 from enum import Enum
-from yt_dlp import YoutubeDL
+
 from requests.exceptions import MissingSchema
 from requests.models import PreparedRequest
 from userbot.utils import runcmd
-from userbot.core.managers import edit_delete, edit_or_reply
+from yt_dlp import YoutubeDL
 
 
 class Stream(Enum):
@@ -54,5 +54,5 @@ async def video_dl(url, title):
     }
 
     with YoutubeDL(video_opts) as ytdl:
-        ytdl_data = ytdl.extract_info(url)
+        ytdl.extract_info(url)
     return path
