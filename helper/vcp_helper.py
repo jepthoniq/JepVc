@@ -16,7 +16,7 @@ from telethon import functions
 from telethon.errors import ChatAdminRequiredError
 from yt_dlp import YoutubeDL
 
-from .stream_helper import Stream, check_url, get_yt_stream_link, yt_regex
+from .stream_helper import Stream, check_url, video_dl, yt_regex
 
 
 class CatVC:
@@ -97,8 +97,7 @@ class CatVC:
                 ytdl_data = ytdl.extract_info(input, download=False)
                 title = ytdl_data.get("title", None)
             if title:
-                audio_only = stream == Stream.audio
-                playable = await get_yt_stream_link(input, audio_only)
+                playable = await video_dl(input, title)
             else:
                 return "Error Fetching URL"
         elif check_url(input):
@@ -119,7 +118,8 @@ class CatVC:
             path = Path(input)
             if path.exists():
                 if not path.name.endswith(
-                    (".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a")
+                    (".mkv", ".mp4", ".webm", ".m4v",
+                     ".mp3", ".flac", ".wav", ".m4a")
                 ):
                     return "`File is invalid for Streaming`"
                 playable = str(path.absolute())
@@ -128,10 +128,12 @@ class CatVC:
                 return "`File Path is invalid`"
         print(playable)
         if self.PLAYING and not force:
-            self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
+            self.PLAYLIST.append(
+                {"title": title, "path": playable, "stream": stream})
             return f"Added to playlist.\n Position: {len(self.PLAYLIST)+1}"
         if not self.PLAYING:
-            self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
+            self.PLAYLIST.append(
+                {"title": title, "path": playable, "stream": stream})
             await self.skip()
             return f"Playing {title}"
         if force and self.PLAYING:

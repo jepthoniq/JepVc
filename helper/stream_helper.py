@@ -1,9 +1,10 @@
 import re
 from enum import Enum
-
+from yt_dlp import YoutubeDL
 from requests.exceptions import MissingSchema
 from requests.models import PreparedRequest
 from userbot.utils import runcmd
+from userbot.core.managers import edit_delete, edit_or_reply
 
 
 class Stream(Enum):
@@ -31,3 +32,27 @@ async def get_yt_stream_link(url, audio_only=False):
             await runcmd(f"yt-dlp --no-warnings --geo-bypass -f bestaudio -g {url}")
         )[0]
     return (await runcmd(f"yt-dlp --no-warnings --geo-bypass -f best -g {url}"))[0]
+
+
+async def video_dl(url, title):
+    path = f"temp/{title.replace(' ', '_')}.mp4"
+    video_opts = {
+        "format": "best",
+        "addmetadata": True,
+        "key": "FFmpegMetadata",
+        "writethumbnail": False,
+        "prefer_ffmpeg": True,
+        "geo_bypass": True,
+        "nocheckcertificate": True,
+        "postprocessors": [
+            {"key": "FFmpegVideoConvertor", "preferedformat": "mp4"},
+            {"key": "FFmpegMetadata"},
+        ],
+        "outtmpl": path,
+        "logtostderr": False,
+        "quiet": True,
+    }
+
+    with YoutubeDL(video_opts) as ytdl:
+        ytdl_data = ytdl.extract_info(url)
+    return path
