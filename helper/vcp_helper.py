@@ -126,6 +126,7 @@ class CatVC:
                 title = path.name
             else:
                 return "`File Path is invalid`"
+        print(playable)
         if self.PLAYING and not force:
             self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
             return f"Added to playlist.\n Position: {len(self.PLAYLIST)+1}"
