@@ -18,7 +18,7 @@ logging.getLogger("pytgcalls").setLevel(logging.ERROR)
 
 OWNER_ID = catub.uid
 
-vc_session = os.environ.get("VC_SESSION", False)
+vc_session = Config.VC_SESSION
 
 if vc_session:
     vc_client = TelegramClient(
@@ -28,7 +28,6 @@ else:
     vc_client = catub
 
 vc_client.__class__.__module__ = "telethon.client.telegramclient"
-
 vc_player = CatVC(vc_client)
 
 asyncio.create_task(vc_player.start())
@@ -289,48 +288,6 @@ async def resume_stream(event):
     await edit_delete(event, res, time=30)
 
 
-# @catub.cat_cmd(
-#     pattern="mutevc",
-#     command=("mutevc", plugin_category),
-#     info={
-#         "header": "To Mute a stream on Voice Chat.",
-#         "description": "To Mute a stream on Voice Chat",
-#         "usage": [
-#             "{tr}mutevc",
-#         ],
-#         "examples": [
-#             "{tr}mutevc",
-#         ],
-#     },
-# )
-# async def mute_stream(event):
-#     "Mute VC"
-#     await edit_or_reply(event, 'Muting VC ......')
-#     res = await vc_player.mute()
-#     await edit_delete(event, res)
-
-######## BUGGED ########
-# @catub.cat_cmd(
-#     pattern="unmutevc",
-#     command=("unmutevc", plugin_category),
-#     info={
-#         "header": "To Unmute a stream on Voice Chat.",
-#         "description": "To Unmute a stream on Voice Chat",
-#         "usage": [
-#             "{tr}unmutevc",
-#         ],
-#         "examples": [
-#             "{tr}unmutevc",
-#         ],
-#     },
-# )
-# async def unmute_stream(event):
-#     "Unmute VC"
-#     await edit_or_reply(event, 'Unmuting VC ......')
-#     res = await vc_player.unmute()
-#     await edit_delete(event, res)
-
-
 @catub.cat_cmd(
     pattern="skip",
     command=("skip", plugin_category),
@@ -350,8 +307,9 @@ async def skip_stream(event):
     await edit_or_reply(event, "Skiping Stream ......")
     res = await vc_player.skip()
     await edit_delete(event, res, time=30)
+    
 
-
+"""
 @catub.cat_cmd(
     pattern="a(?:llow)?vc ?([\d ]*)?",
     command=("allowvc", plugin_category),
@@ -404,60 +362,61 @@ async def disallowvc(event):
     return await edit_delete(event, "Removed User to Allowed List")
 
 
-# @catub.on(
-#     events.NewMessage(outgoing=True, pattern=f"{tr}(speak|sp)(h|j)?(?:\s|$)([\s\S]*)")
-# )  # only for catub client
-# async def speak(event):
-#     "Speak in vc"
-#     r = event.pattern_match.group(2)
-#     input_str = event.pattern_match.group(3)
-#     re = await event.get_reply_message()
-#     if ";" in input_str:
-#         lan, text = input_str.split(";")
-#     else:
-#         if input_str:
-#             text = input_str
-#         elif re and re.text and not input_str:
-#             text = re.message
-#         else:
-#             return await event.delete()
-#         if r == "h":
-#             lan = "hi"
-#         elif r == "j":
-#             lan = "ja"
-#         else:
-#             lan = "en"
-#     text = deEmojify(text.strip())
-#     lan = lan.strip()
-#     if not os.path.isdir("./temp/"):
-#         os.makedirs("./temp/")
-#     file = "./temp/" + "voice.ogg"
-#     try:
-#         tts = gTTS(text, lang=lan)
-#         tts.save(file)
-#         cmd = [
-#             "ffmpeg",
-#             "-i",
-#             file,
-#             "-map",
-#             "0:a",
-#             "-codec:a",
-#             "libopus",
-#             "-b:a",
-#             "100k",
-#             "-vbr",
-#             "on",
-#             file + ".opus",
-#         ]
-#         try:
-#             t_response = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-#         except (subprocess.CalledProcessError, NameError, FileNotFoundError) as exc:
-#             await edit_or_reply(event, str(exc))
-#         else:
-#             os.remove(file)
-#             file = file + ".opus"
-#         await vc_player.play_song(file, Stream.audio, force=False)
-#         await event.delete()
-#         os.remove(file)
-#     except Exception as e:
-#         await edit_or_reply(event, f"**Error:**\n`{e}`")
+@catub.on(
+    events.NewMessage(outgoing=True, pattern=f"{tr}(speak|sp)(h|j)?(?:\s|$)([\s\S]*)")
+)  #only for catub client
+async def speak(event):
+    "Speak in vc"
+    r = event.pattern_match.group(2)
+    input_str = event.pattern_match.group(3)
+    re = await event.get_reply_message()
+    if ";" in input_str:
+        lan, text = input_str.split(";")
+    else:
+        if input_str:
+            text = input_str
+        elif re and re.text and not input_str:
+            text = re.message
+        else:
+            return await event.delete()
+        if r == "h":
+            lan = "hi"
+        elif r == "j":
+            lan = "ja"
+        else:
+            lan = "en"
+    text = deEmojify(text.strip())
+    lan = lan.strip()
+    if not os.path.isdir("./temp/"):
+        os.makedirs("./temp/")
+    file = "./temp/" + "voice.ogg"
+    try:
+        tts = gTTS(text, lang=lan)
+        tts.save(file)
+        cmd = [
+            "ffmpeg",
+            "-i",
+            file,
+            "-map",
+            "0:a",
+            "-codec:a",
+            "libopus",
+            "-b:a",
+            "100k",
+            "-vbr",
+            "on",
+            file + ".opus",
+        ]
+        try:
+            t_response = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        except (subprocess.CalledProcessError, NameError, FileNotFoundError) as exc:
+            await edit_or_reply(event, str(exc))
+        else:
+            os.remove(file)
+            file = file + ".opus"
+        await vc_player.play_song(file, Stream.audio, force=False)
+        await event.delete()
+        os.remove(file)
+    except Exception as e:
+         await edit_or_reply(event, f"**Error:**\n`{e}`")
+"""

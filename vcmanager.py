@@ -37,6 +37,12 @@ async def parse_entity(entity):
 @catub.cat_cmd(
     pattern="vcstart",
     command=("vcstart", plugin_category),
+    info={
+        "header": "To end a stream on Voice Chat.",
+        "description": "To end a stream on Voice Chat",
+        "usage": "{tr}vcstart",
+        "examples": "{tr}vcstart",
+    },
 )
 async def start_vc(event):
     "To start a Voice Chat."
@@ -59,6 +65,12 @@ async def start_vc(event):
 @catub.cat_cmd(
     pattern="vcend",
     command=("vcend", plugin_category),
+    info={
+        "header": "To end a stream on Voice Chat.",
+        "description": "To end a stream on Voice Chat",
+        "usage": "{tr}vcend",
+        "examples": "{tr}vcend",
+    },
 )
 async def end_vc(event):
     "To end a Voice Chat."
@@ -76,29 +88,36 @@ async def end_vc(event):
 @catub.cat_cmd(
     pattern="vcinv ?(.*)?",
     command=("vcinv", plugin_category),
+    info={
+        "header": "To invite users on Voice Chat.",
+        "usage": "{tr}vcinv < userid/username or reply to user >",
+        "examples": [
+            "{tr}vcinv @angelpro",
+            "{tr}vcinv userid1 userid2",
+        ],
+    },
 )
 async def inv_vc(event):
     "To invite users to vc."
     users = event.pattern_match.group(1)
-    if not users:
-        return await edit_delete("Whom Should i invite")
+    reply = await event.get_reply_message()
     vc_chat = await catub.get_entity(event.chat_id)
     gc_call = await chat_vc_checker(event, vc_chat)
     if not gc_call:
         return
+    if not users:
+        if not reply:
+            return await edit_delete("Whom Should i invite")
+        users = reply.from_id
     await edit_or_reply(event, "Inviting User to Group Call")
-    if users:
-        entities = users.split(" ")
-        users = []
-        for entity in entities:
-            cc = await parse_entity(entity)
-            if isinstance(cc, User):
-                users.append(cc)
-    elif event.reply_to_msg_id:
-        reply = await event.get_reply_message()
-        users = [reply.from_id]
+    entities = str(users).split(" ")
+    user_list = []
+    for entity in entities:
+        cc = await parse_entity(entity)
+        if isinstance(cc, User):
+            user_list.append(cc)
     try:
-        await catub(functions.phone.InviteToGroupCallRequest(call=gc_call, users=users))
+        await catub(functions.phone.InviteToGroupCallRequest(call=gc_call, users=user_list))
         await edit_delete(event, "Invited users to Group Call")
     except UserAlreadyInvitedError:
         return await edit_delete(event, "User is Already Invited", time=20)
@@ -107,14 +126,19 @@ async def inv_vc(event):
 @catub.cat_cmd(
     pattern="vcinfo",
     command=("vcinfo", plugin_category),
+    info={
+        "header": "To get info of Voice Chat.",
+        "usage": "{tr}vcinfo",
+        "examples": "{tr}vcinfo",
+    },
 )
 async def info_vc(event):
     "Get info of VC."
-    await edit_or_reply(event, "Getting Group Call Info")
     vc_chat = await catub.get_entity(event.chat_id)
     gc_call = await chat_vc_checker(event, vc_chat)
     if not gc_call:
         return
+    await edit_or_reply(event, "Getting Group Call Info")
     call_details = await catub(
         functions.phone.GetGroupCallRequest(call=gc_call, limit=1)
     )
@@ -133,17 +157,22 @@ async def info_vc(event):
 @catub.cat_cmd(
     pattern="vctitle?(.*)?",
     command=("vctitle", plugin_category),
+    info={
+        "header": "To end a stream on Voice Chat.",
+        "description": "To end a stream on Voice Chat",
+        "usage": "{tr}vctitle <text>",
+        "examples": "{tr}vctitle CatPro",
+    },
 )
 async def title_vc(event):
     "To change vc title."
     title = event.pattern_match.group(1)
-    await edit_or_reply(event, "Changing Group Call Title")
-    if not title:
-        return await edit_delete("What should i keep as title")
     vc_chat = await catub.get_entity(event.chat_id)
     gc_call = await chat_vc_checker(event, vc_chat)
     if not gc_call:
         return
+    if not title:
+        return await edit_delete("What should i keep as title")
     await catub(functions.phone.EditGroupCallTitleRequest(call=gc_call, title=title))
     await edit_delete(event, f"VC title was changed to **{title}**")
 
@@ -151,32 +180,41 @@ async def title_vc(event):
 @catub.cat_cmd(
     pattern="vc(|un)mute ([\s\S]*)",
     command=("vcmute", plugin_category),
+    info={
+        "header": "To mute users on Voice Chat.",
+        "description": "To mute a stream on Voice Chat",
+        "usage": [
+            "{tr}vcmute < userid/username or reply to user >",
+        ],
+        "examples": [
+            "{tr}vcmute @angelpro",
+            "{tr}vcmute userid1 userid2",
+        ],
+    },
 )
 async def mute_vc(event):
     "To mute users in vc."
     cmd = event.pattern_match.group(1)
     users = event.pattern_match.group(2)
-    check = "Unmute" if cmd else "Mute"
-    if not users:
-        return await edit_delete(f"Whom Should i {check}")
+    reply = await event.get_reply_message()
     vc_chat = await catub.get_entity(event.chat_id)
     gc_call = await chat_vc_checker(event, vc_chat)
     if not gc_call:
         return
-
+    check = "Unmute" if cmd else "Mute"
+    if not users:
+        if not reply:
+            return await edit_delete(f"Whom Should i {check}")
+        users = reply.from_id
     await edit_or_reply(event, f"{check[:-1]}ing User in Group Call")
-    if users:
-        entities = users.split(" ")
-        users = []
-        for entity in entities:
-            cc = await parse_entity(entity)
-            if isinstance(cc, User):
-                users.append(cc)
-    elif event.reply_to_msg_id:
-        reply = await event.get_reply_message()
-        users = [reply.from_id]
+    entities = str(users).split(" ")
+    user_list = []
+    for entity in entities:
+        cc = await parse_entity(entity)
+        if isinstance(cc, User):
+            user_list.append(cc)
 
-    for user in users:
+    for user in user_list:
         await catub(
             functions.phone.EditGroupCallParticipantRequest(
                 call=gc_call,
@@ -189,6 +227,17 @@ async def mute_vc(event):
 
 @catub.cat_cmd(
     command=("vcunmute", plugin_category),
+    info={
+        "header": "To unmute users on Voice Chat.",
+        "description": "To unmute a stream on Voice Chat",
+        "usage": [
+            "{tr}vcunmute < userid/username or reply to user>",
+        ],
+        "examples": [
+            "{tr}vcunmute @angelpro",
+            "{tr}vcunmute userid1 userid2",
+        ],
+    },
 )
 async def unmute_vc(event):
     "To unmute users in vc."
