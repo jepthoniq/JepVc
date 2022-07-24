@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import os
 
 from telethon import TelegramClient
 from telethon.sessions import StringSession
@@ -307,7 +306,7 @@ async def skip_stream(event):
     await edit_or_reply(event, "Skiping Stream ......")
     res = await vc_player.skip()
     await edit_delete(event, res, time=30)
-    
+
 
 """
 @catub.cat_cmd(

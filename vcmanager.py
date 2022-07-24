@@ -117,7 +117,9 @@ async def inv_vc(event):
         if isinstance(cc, User):
             user_list.append(cc)
     try:
-        await catub(functions.phone.InviteToGroupCallRequest(call=gc_call, users=user_list))
+        await catub(
+            functions.phone.InviteToGroupCallRequest(call=gc_call, users=user_list)
+        )
         await edit_delete(event, "Invited users to Group Call")
     except UserAlreadyInvitedError:
         return await edit_delete(event, "User is Already Invited", time=20)
