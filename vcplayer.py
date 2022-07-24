@@ -21,7 +21,7 @@ vc_session = Config.VC_SESSION
 
 if vc_session:
     vc_client = TelegramClient(
-        StringSession(vc_session), Config.API_ID, Config.API_HASH
+        StringSession(vc_session), Config.APP_ID, Config.API_HASH
     )
 else:
     vc_client = catub
