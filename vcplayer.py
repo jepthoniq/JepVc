@@ -38,7 +38,7 @@ async def handler(_, update):
 ALLOWED_USERS = set()
 
 
-@jepiq.ar_cmd(pattern="انضم ?(\S+)? ?(?:-as)? ?(\S+)?")
+@jepiq.ar_cmd(pattern="انضمام_للمكالمة ?(\S+)? ?(?:-as)? ?(\S+)?")
 async def joinVoicechat(event):
     chat = event.pattern_match.group(1)
     joinas = event.pattern_match.group(2)
@@ -103,7 +103,7 @@ async def get_playlist(event):
         await edit_delete(event, f"**قائمة التشغيل:**\n\n{jep}\n@jepthon")
 
 
-@jepiq.ar_cmd(pattern="تشغيل_صوتي ?(-ج)? ?([\S ]*)?")
+@jepiq.ar_cmd(pattern="تشغيل_صوتي ?(-اجباري)? ?([\S ]*)?")
 async def play_audio(event):
     flag = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
