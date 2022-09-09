@@ -9,7 +9,7 @@ from telethon.tl.types import User
 
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
-from .helper.vcp_helper import jepthonvc 
+from .helper.vcp_helper import jepthonvc as Jepthonvc
 
 logging.getLogger("pytgcalls").setLevel(logging.ERROR)
 
@@ -25,7 +25,7 @@ else:
     vc_client = jepiq
 
 vc_client.__class__.__module__ = "telethon.client.telegramclient"
-vc_player = jepthonvc(vc_client)
+vc_player = Jepthonvc(vc_client)
 
 asyncio.create_task(vc_player.start())
 
