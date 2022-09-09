@@ -38,7 +38,7 @@ async def handler(_, update):
 ALLOWED_USERS = set()
 
 
-@jepthon.ar_cmd(pattern="انضم ?(\S+)? ?(?:-as)? ?(\S+)?")
+@jepiq.ar_cmd(pattern="انضم ?(\S+)? ?(?:-as)? ?(\S+)?")
 async def joinVoicechat(event):
     chat = event.pattern_match.group(1)
     joinas = event.pattern_match.group(2)
