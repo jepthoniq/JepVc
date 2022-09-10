@@ -119,7 +119,7 @@ async def joinVoicechat(event):
 async def leaveVoicechat(event):
     "To leave a Voice Chat."
     if vc_player.CHAT_ID:
-        await edit_or_reply(event, "Leaving VC ......")
+        await edit_or_reply(event, "** تدلل غادرت من الاتصال حبيبي ❤️ **")
         chat_name = vc_player.CHAT_NAME
         await vc_player.leave_vc()
         await edit_delete(event, f"Left VC of {chat_name}")
@@ -128,8 +128,8 @@ async def leaveVoicechat(event):
 
 
 @jepiq.ar_cmd(
-    pattern="playlist",
-    command=("playlist", plugin_category),
+    pattern="قائمة_التشغيل",
+    command=("قائمة_التشغيل", plugin_category),
     info={
         "header": "To Get all playlist.",
         "description": "To Get all playlist for Voice Chat.",
@@ -143,67 +143,23 @@ async def leaveVoicechat(event):
 )
 async def get_playlist(event):
     "To Get all playlist for Voice Chat."
-    await edit_or_reply(event, "Fetching Playlist ......")
+    await edit_or_reply(event, "**جارِ جلب قائمة التشغيل ......**")
     playl = vc_player.PLAYLIST
     if not playl:
         await edit_delete(event, "Playlist empty", time=10)
     else:
-        cat = ""
+        jep = ""
         for num, item in enumerate(playl, 1):
             if item["stream"] == Stream.audio:
-                cat += f"{num}. 🔉  `{item['title']}`\n"
+                jep += f"{num}. 🔉  `{item['title']}`\n"
             else:
-                cat += f"{num}. 📺  `{item['title']}`\n"
-        await edit_delete(event, f"**Playlist:**\n\n{cat}\n**Enjoy the show**")
+                jep += f"{num}. 📺  `{item['title']}`\n"
+        await edit_delete(event, f"**قائمة التشغيل:**\n\n{jep}\n**جيبثون يتمنى لكم وقتاً ممتعاً**")
 
 
 @jepiq.ar_cmd(
-    pattern="vplay ?(-f)? ?([\S ]*)?",
-    command=("vplay", plugin_category),
-    info={
-        "header": "To Play a media as video on VC.",
-        "description": "To play a video stream on VC.",
-        "flags": {
-            "-f": "Force play the Video",
-        },
-        "usage": [
-            "{tr}vplay (reply to message)",
-            "{tr}vplay (yt link)",
-            "{tr}vplay -f (yt link)",
-        ],
-        "examples": [
-            "{tr}vplay",
-            "{tr}vplay https://www.youtube.com/watch?v=c05GBLT_Ds0",
-            "{tr}vplay -f https://www.youtube.com/watch?v=c05GBLT_Ds0",
-        ],
-    },
-)
-async def play_video(event):
-    "To Play a media as video on VC."
-    flag = event.pattern_match.group(1)
-    input_str = event.pattern_match.group(2)
-    if input_str == "" and event.reply_to_msg_id:
-        input_str = await tg_dl(event)
-    if not input_str:
-        return await edit_delete(
-            event, "Please Provide a media file to stream on VC", time=20
-        )
-    if not vc_player.CHAT_ID:
-        return await edit_or_reply(event, "Join a VC and use play command")
-    if not input_str:
-        return await edit_or_reply(event, "No Input to play in vc")
-    await edit_or_reply(event, "Playing in VC ......")
-    if flag:
-        resp = await vc_player.play_song(input_str, Stream.video, force=True)
-    else:
-        resp = await vc_player.play_song(input_str, Stream.video, force=False)
-    if resp:
-        await edit_delete(event, resp, time=30)
-
-
-@jepiq.ar_cmd(
-    pattern="play ?(-f)? ?([\S ]*)?",
-    command=("play", plugin_category),
+    pattern="تشغيل ?(-f)? ?([\S ]*)?",
+    command=("تشغيل", plugin_category),
     info={
         "header": "To Play a media as audio on VC.",
         "description": "To play a audio stream on VC.",
@@ -230,13 +186,13 @@ async def play_audio(event):
         input_str = await tg_dl(event)
     if not input_str:
         return await edit_delete(
-            event, "Please Provide a media file to stream on VC", time=20
+            event, "**قم بالرد على ملف صوتي او رابط يوتيوب**", time=20
         )
     if not vc_player.CHAT_ID:
-        return await edit_or_reply(event, "Join a VC and use play command")
+        return await edit_or_reply(event, "**`قم بلانضمام للمكالمة اولاً بأستخدام أمر `انضمام")
     if not input_str:
         return await edit_or_reply(event, "No Input to play in vc")
-    await edit_or_reply(event, "Playing in VC ......")
+    await edit_or_reply(event, "**يتم الان تشغيل الاغنية في الاتصال ❤️**")
     if flag:
         resp = await vc_player.play_song(input_str, Stream.audio, force=True)
     else:
@@ -246,7 +202,7 @@ async def play_audio(event):
 
 
 @jepiq.ar_cmd(
-    pattern="pause",
+    pattern="ايقاف_مؤقت",
     command=("pause", plugin_category),
     info={
         "header": "To Pause a stream on Voice Chat.",
@@ -261,14 +217,14 @@ async def play_audio(event):
 )
 async def pause_stream(event):
     "To Pause a stream on Voice Chat."
-    await edit_or_reply(event, "Pausing VC ......")
+    await edit_or_reply(event, "**تم ايقاف الموسيقى مؤقتاً ⏸**")
     res = await vc_player.pause()
     await edit_delete(event, res, time=30)
 
 
 @jepiq.ar_cmd(
-    pattern="resume",
-    command=("resume", plugin_category),
+    pattern="استمرار",
+    command=("استمرار", plugin_category),
     info={
         "header": "To Resume a stream on Voice Chat.",
         "description": "To Resume a stream on Voice Chat",
@@ -282,14 +238,14 @@ async def pause_stream(event):
 )
 async def resume_stream(event):
     "To Resume a stream on Voice Chat."
-    await edit_or_reply(event, "Resuming VC ......")
+    await edit_or_reply(event, "**تم استمرار الاغنيه استمتع ▶️**")
     res = await vc_player.resume()
     await edit_delete(event, res, time=30)
 
 
 @jepiq.ar_cmd(
-    pattern="skip",
-    command=("skip", plugin_category),
+    pattern="تخطي",
+    command=("تخطي", plugin_category),
     info={
         "header": "To Skip currently playing stream on Voice Chat.",
         "description": "To Skip currently playing stream on Voice Chat.",
@@ -303,6 +259,6 @@ async def resume_stream(event):
 )
 async def skip_stream(event):
     "To Skip currently playing stream on Voice Chat."
-    await edit_or_reply(event, "Skiping Stream ......")
+    await edit_or_reply(event, "**تم تخطي الاغنية وتشغيل الاغنيه التالية 🎵**")
     res = await vc_player.skip()
     await edit_delete(event, res, time=30)
