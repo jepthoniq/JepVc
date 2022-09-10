@@ -76,7 +76,7 @@ async def joinVoicechat(event):
     await edit_delete(event, out)
 
 
-@jepiq.ar_cmd(pattern="غادر")
+@jepiq.ar_cmd(pattern="مغادرة_المكالمة")
 async def leaveVoicechat(event):
     if vc_player.CHAT_ID:
         await edit_or_reply(event, "جار المغادرة انتظر قليلا ......")
