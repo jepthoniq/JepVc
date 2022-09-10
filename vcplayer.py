@@ -203,7 +203,7 @@ async def play_audio(event):
 
 @jepiq.ar_cmd(
     pattern="ايقاف_مؤقت",
-    command=("pause", plugin_category),
+    command=("ايقاف_مؤقت", plugin_category),
     info={
         "header": "To Pause a stream on Voice Chat.",
         "description": "To Pause a stream on Voice Chat",
