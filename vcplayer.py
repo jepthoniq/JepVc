@@ -151,3 +151,64 @@ async def skip_stream(event):
     await edit_or_reply(event, "- تم بنجاح تخطي التشغيل الحالي")
     res = await vc_player.skip()
     await edit_delete(event, res, time=30)
+
+@jepiq.ar_cmd(
+    pattern="joinvc ?(\S+)? ?(?:-as)? ?(\S+)?",
+    command=("joinvc", plugin_category),
+    info={
+        "header": "To join a Voice Chat.",
+        "description": "To join or create and join a Voice Chat",
+        "note": "You can use -as flag to join anonymously",
+        "flags": {
+            "-as": "To join as another chat.",
+        },
+        "usage": [
+            "{tr}joinvc",
+            "{tr}joinvc (chat_id)",
+            "{tr}joinvc -as (peer_id)",
+            "{tr}joinvc (chat_id) -as (peer_id)",
+        ],
+        "examples": [
+            "{tr}joinvc",
+            "{tr}joinvc -1005895485",
+            "{tr}joinvc -as -1005895485",
+            "{tr}joinvc -1005895485 -as -1005895485",
+        ],
+    },
+)
+async def joinVoicechat(event):
+    "To join a Voice Chat."
+    chat = event.pattern_match.group(1)
+    joinas = event.pattern_match.group(2)
+
+    await edit_or_reply(event, "Joining VC ......")
+
+    if chat and chat != "-as":
+        if chat.strip("-").isnumeric():
+            chat = int(chat)
+    else:
+        chat = event.chat_id
+
+    if vc_player.app.active_calls:
+        return await edit_delete(
+            event, f"You have already Joined in {vc_player.CHAT_NAME}"
+        )
+
+    try:
+        vc_chat = await jepiq.get_entity(chat)
+    except Exception as e:
+        return await edit_delete(event, f'ERROR : \n{e or "UNKNOWN CHAT"}')
+
+    if isinstance(vc_chat, User):
+        return await edit_delete(
+            event, "Voice Chats are not available in Private Chats"
+        )
+
+    if joinas and not vc_chat.username:
+        await edit_or_reply(
+            event, "Unable to use Join as in Private Chat. Joining as Yourself..."
+        )
+        joinas = False
+
+    out = await vc_player.join_vc(vc_chat, joinas)
+    await edit_delete(event, out)
