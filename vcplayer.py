@@ -4,7 +4,7 @@ import logging
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from telethon.tl.types import User
-from jepthon import Config, catub
+from jepthon import Config, jepiq
 from jepthon.core.managers import edit_delete, edit_or_reply
 
 from .helper.stream_helper import Stream
