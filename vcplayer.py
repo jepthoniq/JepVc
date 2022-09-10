@@ -102,6 +102,33 @@ async def get_playlist(event):
                 jep += f"{num}. 📺  `{item['title']}`\n"
         await edit_delete(event, f"**قائمة التشغيل:**\n\n{jep}\n@jepthon")
 
+@jepiq.ar_cmd(pattern="تشغيل_فيديو ?(-اجباري)? ?([\S ]*)?")
+async def play_video(event):
+    flag = event.pattern_match.group(1)
+    input_str = event.pattern_match.group(2)
+    if input_str == "" and event.reply_to_msg_id:
+        input_str = await tg_dl(event)
+    if not input_str:
+        return await edit_delete(
+            event, "**- يجب عليك الرد على الفيديو او كتابة الرابط مع الامر**", time=20
+        )
+    if not vc_player.CHAT_ID:
+        return await edit_or_reply(
+            event, "**- يجب عليك الانضمام للمكالمة اولا استخدام الامر**"
+        )
+    if not input_str:
+        return await edit_or_reply(
+            event, "**- يجب عليك وضع رابط او الرد على الميديا المراد تشغيلها**"
+        )
+    await edit_or_reply(event, "**- جار التشغيل في المكالمة انتظر قليلا**")
+    if flag:
+        resp = await vc_player.play_song(input_str, Stream.video, force=True)
+    else:
+        resp = await vc_player.play_song(input_str, Stream.video, force=False)
+    if resp:
+        await edit_delete(event, resp, time=30)
+
+
 
 @jepiq.ar_cmd(pattern="تشغيل_صوتي ?(-اجباري)? ?([\S ]*)?")
 async def play_audio(event):
