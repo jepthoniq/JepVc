@@ -40,7 +40,7 @@ async def handler(_, update):
 ALLOWED_USERS = set()
 
 
-@jepiq_cmd(
+@jepiq.ar_cmd(
     pattern="انضمام ?(\S+)? ?(?:-as)? ?(\S+)?",
     command=("انضمام", plugin_category),
     info={
