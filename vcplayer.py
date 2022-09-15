@@ -79,7 +79,7 @@ async def joinVoicechat(event):
 
     if vc_player.app.active_calls:
         return await edit_delete(
-            event, f"You have already Joined in {vc_player.CHAT_NAME}"
+            event, f"لقد انضممت بالفعل الى {vc_player.CHAT_NAME}"
         )
 
     try:
@@ -89,12 +89,12 @@ async def joinVoicechat(event):
 
     if isinstance(vc_chat, User):
         return await edit_delete(
-            event, "Voice Chats are not available in Private Chats"
+            event, "لايمكنك استعمال اوامر الميوزك على الخاص فقط في المجموعات !"
         )
 
     if joinas and not vc_chat.username:
         await edit_or_reply(
-            event, "Unable to use Join as in Private Chat. Joining as Yourself..."
+            event, "**انت وين لكيت هل كلاوات حبيبي مو كتلك ميصير بلاتصال الخاص**"
         )
         joinas = False
 
