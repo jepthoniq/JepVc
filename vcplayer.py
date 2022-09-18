@@ -122,9 +122,9 @@ async def leaveVoicechat(event):
         await edit_or_reply(event, "** تدلل غادرت من الاتصال حبيبي ❤️ **")
         chat_name = vc_player.CHAT_NAME
         await vc_player.leave_vc()
-        await edit_delete(event, f"Left VC of {chat_name}")
+        await edit_delete(event, f"تمت المغادرة من {chat_name}")
     else:
-        await edit_delete(event, "Not yet joined any VC")
+        await edit_delete(event, "** انا لست منضم الى الاتصال عزيزي ❤️**")
 
 
 @jepiq.ar_cmd(
