@@ -5,9 +5,9 @@ import pathlib
 import time
 from datetime import datetime
 
-from jepthon.Config import Config
-from jepthon.core.managers import edit_or_reply
-from jepthon.helpers import progress
+from joker.Config import Config
+from joker.core.managers import edit_or_reply
+from joker.helpers import progress
 from telethon.tl import types
 from telethon.utils import get_extension
 
