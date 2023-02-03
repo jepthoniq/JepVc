@@ -1,6 +1,6 @@
-from jepthon import jepiq
-from jepthon.core.managers import edit_delete, edit_or_reply
-from jepthon.helpers.utils import mentionuser
+from joker import l313l
+from joker.core.managers import edit_delete, edit_or_reply
+from joker.helpers.utils import mentionuser
 from telethon import functions
 from telethon.errors import ChatAdminRequiredError, UserAlreadyInvitedError
 from telethon.tl.types import Channel, Chat, User
@@ -8,9 +8,9 @@ from telethon.tl.types import Channel, Chat, User
 
 async def get_group_call(chat):
     if isinstance(chat, Channel):
-        result = await jepiq(functions.channels.GetFullChannelRequest(channel=chat))
+        result = await l313l(functions.channels.GetFullChannelRequest(channel=chat))
     elif isinstance(chat, Chat):
-        result = await jepiq(functions.messages.GetFullChatRequest(chat_id=chat.id))
+        result = await l313l(functions.messages.GetFullChatRequest(chat_id=chat.id))
     return result.full_chat.call
 
 
@@ -29,22 +29,22 @@ async def chat_vc_checker(event, chat, edits=True):
 async def parse_entity(entity):
     if entity.isnumeric():
         entity = int(entity)
-    return await jepiq.get_entity(entity)
+    return await l313l.get_entity(entity)
 
 
-@jepiq.ar_cmd(pattern="تشغيل_المكالمة")
+@l313l.ar_cmd(pattern="تشغيل_المكالمة")
 async def start_vc(event):
-    vc_chat = await jepiq.get_entity(event.chat_id)
+    vc_chat = await l313l.get_entity(event.chat_id)
     gc_call = await chat_vc_checker(event, vc_chat, False)
     if gc_call:
         return await edit_delete(
             event, "**- المكالمة الصوتية بالفعل مشغلة بهذه الدردشة**"
         )
     try:
-        await jepiq(
+        await l313l(
             functions.phone.CreateGroupCallRequest(
                 peer=vc_chat,
-                title="jepthon VC",
+                title="الجوكر 🤡",
             )
         )
         await edit_delete(event, "**- تم بنجاح تشغيل المكالمة الصوتية**")
@@ -52,14 +52,14 @@ async def start_vc(event):
         await edit_delete(event, "**- يجب ان تكون ادمن لتشغيل المكالمة هنا**", time=20)
 
 
-@jepiq.ar_cmd(pattern="انهاء_المكالمة")
+@l313l.ar_cmd(pattern="انهاء_المكالمة")
 async def end_vc(event):
-    vc_chat = await jepiq.get_entity(event.chat_id)
+    vc_chat = await l313l.get_entity(event.chat_id)
     gc_call = await chat_vc_checker(event, vc_chat)
     if not gc_call:
         return
     try:
-        await jepiq(functions.phone.DiscardGroupCallRequest(call=gc_call))
+        await l313l(functions.phone.DiscardGroupCallRequest(call=gc_call))
         await edit_delete(event, "**- تم بنجاح انهاء المكالمة الصوتية**")
     except ChatAdminRequiredError:
         await edit_delete(
@@ -67,11 +67,11 @@ async def end_vc(event):
         )
 
 
-@jepiq.ar_cmd(pattern="دعوة ?(.*)?")
+@l313l.ar_cmd(pattern="دعوة ?(.*)?")
 async def inv_vc(event):
     users = event.pattern_match.group(1)
     reply = await event.get_reply_message()
-    vc_chat = await jepiq.get_entity(event.chat_id)
+    vc_chat = await l313l.get_entity(event.chat_id)
     gc_call = await chat_vc_checker(event, vc_chat)
     if not gc_call:
         return
@@ -89,7 +89,7 @@ async def inv_vc(event):
         if isinstance(cc, User):
             user_list.append(cc)
     try:
-        await jepiq(
+        await l313l(
             functions.phone.InviteToGroupCallRequest(call=gc_call, users=user_list)
         )
         await edit_delete(event, "**- تم بنجاح دعوة المستخدمين**")
@@ -97,14 +97,14 @@ async def inv_vc(event):
         return await edit_delete(event, "- تم دعوة المستخدم بالاصل", time=20)
 
 
-@jepiq.ar_cmd(pattern="معلومات_المكالمة")
+@l313l.ar_cmd(pattern="معلومات_المكالمة")
 async def info_vc(event):
-    vc_chat = await jepiq.get_entity(event.chat_id)
+    vc_chat = await l313l.get_entity(event.chat_id)
     gc_call = await chat_vc_checker(event, vc_chat)
     if not gc_call:
         return
     await edit_or_reply(event, "**- جار جلب معلومات المكالمة انتظر قليلا**")
-    call_details = await jepiq(
+    call_details = await l313l(
         functions.phone.GetGroupCallRequest(call=gc_call, limit=1)
     )
     grp_call = "**معلومات مكالمة المجموعة**\n\n"
@@ -119,14 +119,14 @@ async def info_vc(event):
     await edit_or_reply(event, grp_call)
 
 
-@jepiq.ar_cmd(pattern="تسمية_المكالمة?(.*)?")
+@l313l.ar_cmd(pattern="تسمية_المكالمة?(.*)?")
 async def title_vc(event):
     title = event.pattern_match.group(1)
-    vc_chat = await jepiq.get_entity(event.chat_id)
+    vc_chat = await l313l.get_entity(event.chat_id)
     gc_call = await chat_vc_checker(event, vc_chat)
     if not gc_call:
         return
     if not title:
         return await edit_delete("**- يجب عليك كتابة العنوان مع الامر**")
-    await jepiq(functions.phone.EditGroupCallTitleRequest(call=gc_call, title=title))
+    await l313l(functions.phone.EditGroupCallTitleRequest(call=gc_call, title=title))
     await edit_delete(event, f"- تم بنجاح تغيير اسم المكالمة الى **{title}**")
