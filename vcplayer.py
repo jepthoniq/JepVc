@@ -4,8 +4,8 @@ import logging
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from telethon.tl.types import User
-from jepthon import Config, jepiq
-from jepthon.core.managers import edit_delete, edit_or_reply
+from joker import Config, l313l
+from joker.core.managers import edit_delete, edit_or_reply
 
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
@@ -15,7 +15,7 @@ plugin_category = "extra"
 
 logging.getLogger("pytgcalls").setLevel(logging.ERROR)
 
-OWNER_ID = jepiq.uid
+OWNER_ID = l313l.uid
 
 vc_session = Config.VC_SESSION
 
@@ -24,7 +24,7 @@ if vc_session:
         StringSession(vc_session), Config.APP_ID, Config.API_HASH
     )
 else:
-    vc_client = jepiq
+    vc_client = l313l
 
 vc_client.__class__.__module__ = "telethon.client.telegramclient"
 vc_player = jepthonvc(vc_client)
@@ -40,7 +40,7 @@ async def handler(_, update):
 ALLOWED_USERS = set()
 
 
-@jepiq.ar_cmd(
+@l313l.ar_cmd(
     pattern="انضمام ?(\S+)? ?(?:-as)? ?(\S+)?",
     command=("انضمام", plugin_category),
     info={
@@ -83,7 +83,7 @@ async def joinVoicechat(event):
         )
 
     try:
-        vc_chat = await jepiq.get_entity(chat)
+        vc_chat = await l313l.get_entity(chat)
     except Exception as e:
         return await edit_delete(event, f'ERROR : \n{e or "UNKNOWN CHAT"}')
 
