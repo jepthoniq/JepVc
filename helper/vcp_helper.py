@@ -65,7 +65,7 @@ class jepthonvc:
                 await self.client(
                     functions.phone.CreateGroupCallRequest(
                         peer=chat,
-                        title="jepthon VC",
+                        title="الجوكر 🤡",
                     )
                 )
                 await self.join_vc(chat=chat, join_as=join_as)
