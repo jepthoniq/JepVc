@@ -102,7 +102,7 @@ async def joinVoicechat(event):
     await edit_delete(event, out)
 
 
-@jepiq.ar_cmd(
+@l313l.ar_cmd(
     pattern="مغادرة",
     command=("مغادرة", plugin_category),
     info={
@@ -127,7 +127,7 @@ async def leaveVoicechat(event):
         await edit_delete(event, "** انا لست منضم الى الاتصال عزيزي ❤️**")
 
 
-@jepiq.ar_cmd(
+@l313l.ar_cmd(
     pattern="قائمة_التشغيل",
     command=("قائمة_التشغيل", plugin_category),
     info={
@@ -157,7 +157,7 @@ async def get_playlist(event):
         await edit_delete(event, f"**قائمة التشغيل:**\n\n{jep}\n**جيبثون يتمنى لكم وقتاً ممتعاً**")
 
 
-@jepiq.ar_cmd(
+@l313l.ar_cmd(
     pattern="تشغيل ?(-f)? ?([\S ]*)?",
     command=("تشغيل", plugin_category),
     info={
@@ -201,7 +201,7 @@ async def play_audio(event):
         await edit_delete(event, resp, time=30)
 
 
-@jepiq.ar_cmd(
+@l313l.ar_cmd(
     pattern="ايقاف_مؤقت",
     command=("ايقاف_مؤقت", plugin_category),
     info={
@@ -222,7 +222,7 @@ async def pause_stream(event):
     await edit_delete(event, res, time=30)
 
 
-@jepiq.ar_cmd(
+@l313l.ar_cmd(
     pattern="استمرار",
     command=("استمرار", plugin_category),
     info={
@@ -243,7 +243,7 @@ async def resume_stream(event):
     await edit_delete(event, res, time=30)
 
 
-@jepiq.ar_cmd(
+@l313l.ar_cmd(
     pattern="تخطي",
     command=("تخطي", plugin_category),
     info={
