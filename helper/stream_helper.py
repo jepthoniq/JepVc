@@ -3,7 +3,7 @@ from enum import Enum
 
 from requests.exceptions import MissingSchema
 from requests.models import PreparedRequest
-from jepthon.utils import runcmd
+from joker.utils import runcmd
 from yt_dlp import YoutubeDL
 
 
