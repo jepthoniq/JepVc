@@ -103,8 +103,8 @@ async def joinVoicechat(event):
 
 
 @l313l.ar_cmd(
-    pattern="مغادرة",
-    command=("مغادرة", plugin_category),
+    pattern="غادر",
+    command=("غادر", plugin_category),
     info={
         "header": "To leave a Voice Chat.",
         "description": "To leave a Voice Chat",
