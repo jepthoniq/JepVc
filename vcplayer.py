@@ -156,6 +156,8 @@ async def get_playlist(event):
                 jep += f"{num}. 📺  `{item['title']}`\n"
         await edit_delete(event, f"**قائمة التشغيل:**\n\n{jep}\n**الجوكر يتمنى لكم وقتاً ممتعاً**")
 
+import re
+
 @l313l.ar_cmd(
     pattern="تشغيل ?(-f)? ?([\S ]*)?",
     command=("تشغيل", plugin_category),
@@ -201,8 +203,7 @@ async def play_audio(event):
     else:
         resp = await vc_player.play_song(input_str, Stream.audio, force=False)
     if resp:
-        await edit_delete(event, resp,time=30)
-
+        await edit_delete(event, resp, time=30)
 @l313l.ar_cmd(
     pattern="ايقاف_مؤقت",
     command=("ايقاف_مؤقت", plugin_category),
