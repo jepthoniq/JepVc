@@ -201,10 +201,8 @@ async def play_audio(event):
     else:
         resp = await vc_player.play_song(input_str, Stream.audio, force=False)
     if resp:
-        await edit_delete(event, resp, time=30)
-async def convert_youtube_link_to_name(link):
-    return song_name
-    
+        await edit_delete(event, resp,time=30)
+
 @l313l.ar_cmd(
     pattern="ايقاف_مؤقت",
     command=("ايقاف_مؤقت", plugin_category),
