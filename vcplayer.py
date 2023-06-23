@@ -1,6 +1,6 @@
 import asyncio
 import logging
-
+import re
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from telethon.tl.types import User
@@ -154,53 +154,57 @@ async def get_playlist(event):
                 jep += f"{num}. 🔉  `{item['title']}`\n"
             else:
                 jep += f"{num}. 📺  `{item['title']}`\n"
-        await edit_delete(event, f"**قائمة التشغيل:**\n\n{jep}\n**جيبثون يتمنى لكم وقتاً ممتعاً**")
-
+        await edit_delete(event, f"**قائمة التشغيل:**\n\n{jep}\n**الجوكر يتمنى لكم وقتاً ممتعاً**")
 
 @l313l.ar_cmd(
     pattern="تشغيل ?(-f)? ?([\S ]*)?",
     command=("تشغيل", plugin_category),
     info={
-        "header": "To Play a media as audio on VC.",
-        "description": "To play a audio stream on VC.",
+        "header": "لتشغيل ملف صوتي أو أغنية في الدردشة الصوتية.",
+        "description": "لتشغيل تيار صوتي في الدردشة الصوتية.",
         "flags": {
-            "-f": "Force play the Audio",
+            "-f": "تشغيل الصوت بقوة",
         },
         "usage": [
-            "{tr}play (reply to message)",
-            "{tr}play (yt link)",
-            "{tr}play -f (yt link)",
+            "{tr}play (الرد على رسالة)",
+            "{tr}play (اسم الأغنية أو رابط YouTube)",
+            "{tr}play -f (اسم الأغنية أو رابط YouTube)",
         ],
         "examples": [
             "{tr}play",
+            "{tr}play أغنية رائعة",
+            "{tr}play -f أغنية رائعة",
             "{tr}play https://www.youtube.com/watch?v=c05GBLT_Ds0",
             "{tr}play -f https://www.youtube.com/watch?v=c05GBLT_Ds0",
         ],
     },
 )
 async def play_audio(event):
-    "To Play a media as audio on VC."
+    "لتشغيل ملف صوتي أو أغنية في الدردشة الصوتية."
     flag = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
     if input_str == "" and event.reply_to_msg_id:
         input_str = await tg_dl(event)
     if not input_str:
         return await edit_delete(
-            event, "**قم بالرد على ملف صوتي او رابط يوتيوب**", time=20
+            event, "يرجى تحديد ملف صوتي أو كتابة اسم الأغنية أو وضع رابط YouTube.", time=20
         )
     if not vc_player.CHAT_ID:
-        return await edit_or_reply(event, "**`قم بلانضمام للمكالمة اولاً بأستخدام أمر `انضمام")
-    if not input_str:
-        return await edit_or_reply(event, "No Input to play in vc")
-    await edit_or_reply(event, "**يتم الان تشغيل الاغنية في الاتصال ❤️**")
+        return await edit_or_reply(event, "يرجى الانضمام إلى الدردشة الصوتية أولاً باستخدام الأمر 'انضمام'.")
+    await edit_or_reply(event, f"جارٍ تشغيل أغنية: {input_str} في الدردشة الصوتية. ❤️")
+    youtube_regex = r"^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+"
+    is_youtube_link = re.match(youtube_regex, input_str)
+    if is_youtube_link:
+        input_str = await convert_youtube_link_to_name(input_str)
     if flag:
         resp = await vc_player.play_song(input_str, Stream.audio, force=True)
     else:
         resp = await vc_player.play_song(input_str, Stream.audio, force=False)
     if resp:
         await edit_delete(event, resp, time=30)
-
-
+async def convert_youtube_link_to_name(link):
+    return song_name
+    
 @l313l.ar_cmd(
     pattern="ايقاف_مؤقت",
     command=("ايقاف_مؤقت", plugin_category),
