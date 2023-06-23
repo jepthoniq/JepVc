@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import re
+import youtube_dl
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from telethon.tl.types import User
@@ -156,7 +157,11 @@ async def get_playlist(event):
                 jep += f"{num}. 📺  `{item['title']}`\n"
         await edit_delete(event, f"**قائمة التشغيل:**\n\n{jep}\n**الجوكر يتمنى لكم وقتاً ممتعاً**")
 
-import re
+def convert_youtube_link_to_name(link):
+    with youtube_dl.YoutubeDL({}) as ydl:
+        info = ydl.extract_info(link, download=False)
+        title = info['title']
+    return title
 
 @l313l.ar_cmd(
     pattern="تشغيل ?(-f)? ?([\S ]*)?",
@@ -196,14 +201,17 @@ async def play_audio(event):
     await edit_or_reply(event, f"جارٍ تشغيل أغنية: {input_str} في الدردشة الصوتية. ❤️")
     youtube_regex = r"^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+"
     is_youtube_link = re.match(youtube_regex, input_str)
+    
     if is_youtube_link:
-        input_str = await convert_youtube_link_to_name(input_str)
+        input_str = convert_youtube_link_to_name(input_str)
+    
     if flag:
         resp = await vc_player.play_song(input_str, Stream.audio, force=True)
     else:
         resp = await vc_player.play_song(input_str, Stream.audio, force=False)
     if resp:
         await edit_delete(event, resp, time=30)
+        
 @l313l.ar_cmd(
     pattern="ايقاف_مؤقت",
     command=("ايقاف_مؤقت", plugin_category),
