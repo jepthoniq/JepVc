@@ -1,7 +1,5 @@
 import asyncio
 import logging
-import re
-import youtube_dl
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from telethon.tl.types import User
@@ -167,44 +165,38 @@ def convert_youtube_link_to_name(link):
     pattern="تشغيل ?(-f)? ?([\S ]*)?",
     command=("تشغيل", plugin_category),
     info={
-        "header": "لتشغيل ملف صوتي أو أغنية في الدردشة الصوتية.",
-        "description": "لتشغيل تيار صوتي في الدردشة الصوتية.",
+        "header": "To Play a media as audio on VC.",
+        "description": "To play a audio stream on VC.",
         "flags": {
-            "-f": "تشغيل الصوت بقوة",
+            "-f": "Force play the Audio",
         },
         "usage": [
-            "{tr}play (الرد على رسالة)",
-            "{tr}play (اسم الأغنية أو رابط YouTube)",
-            "{tr}play -f (اسم الأغنية أو رابط YouTube)",
+            "{tr}play (reply to message)",
+            "{tr}play (yt link)",
+            "{tr}play -f (yt link)",
         ],
         "examples": [
             "{tr}play",
-            "{tr}play أغنية رائعة",
-            "{tr}play -f أغنية رائعة",
             "{tr}play https://www.youtube.com/watch?v=c05GBLT_Ds0",
             "{tr}play -f https://www.youtube.com/watch?v=c05GBLT_Ds0",
         ],
     },
 )
 async def play_audio(event):
-    "لتشغيل ملف صوتي أو أغنية في الدردشة الصوتية."
+    "To Play a media as audio on VC."
     flag = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
     if input_str == "" and event.reply_to_msg_id:
         input_str = await tg_dl(event)
     if not input_str:
         return await edit_delete(
-            event, "يرجى تحديد ملف صوتي أو كتابة اسم الأغنية أو وضع رابط YouTube.", time=20
+            event, "**قم بالرد على ملف صوتي او رابط يوتيوب**", time=20
         )
     if not vc_player.CHAT_ID:
-        return await edit_or_reply(event, "يرجى الانضمام إلى الدردشة الصوتية أولاً باستخدام الأمر 'انضمام'.")
-    await edit_or_reply(event, f"جارٍ تشغيل أغنية: {input_str} في الدردشة الصوتية. ❤️")
-    youtube_regex = r"^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+"
-    is_youtube_link = re.match(youtube_regex, input_str)
-    
-    if is_youtube_link:
-        input_str = convert_youtube_link_to_name(input_str)
-    
+        return await edit_or_reply(event, "**`قم بلانضمام للمكالمة اولاً بأستخدام أمر `انضمام")
+    if not input_str:
+        return await edit_or_reply(event, "No Input to play in vc")
+    await edit_or_reply(event, "**يتم الان تشغيل الاغنية في الاتصال ❤️**")
     if flag:
         resp = await vc_player.play_song(input_str, Stream.audio, force=True)
     else:
